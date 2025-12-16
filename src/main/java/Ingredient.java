@@ -19,7 +19,7 @@ public class Ingredient {
     }
 
     public String getDishName() {
-        throw new RuntimeException("Not implemented");
+        return dish == null ? null : dish.getName();
     }
 
     public Integer getId() {
@@ -81,6 +81,7 @@ public class Ingredient {
                 ", name='" + name + '\'' +
                 ", category=" + category +
                 ", price=" + price +
+                ", dishName=" + getDishName() +
                 '}';
     }
 }
