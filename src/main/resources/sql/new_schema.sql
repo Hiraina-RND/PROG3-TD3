@@ -21,7 +21,7 @@ create table ingredient
 
 create type unit_type as enum ('PCS', 'KG', 'L');
 
-create table dishIngredient
+create table dish_ingredient
 (
     id                  serial primary key,
     id_dish             int references dish(id),
