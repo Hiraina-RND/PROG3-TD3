@@ -41,7 +41,7 @@ public class Dish {
         return "Dish{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", ingredients=" + ingredientsStr +
+                ", ingredients={" + ingredientsStr + "}" +
                 ", price=" + price +
                 '}';
     }
