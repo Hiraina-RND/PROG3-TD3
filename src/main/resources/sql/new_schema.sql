@@ -3,10 +3,10 @@ create type dish_type as enum ('STARTER', 'MAIN', 'DESSERT');
 
 create table dish
 (
-    id        serial primary key,
-    name      varchar(255),
-    dish_type dish_type,
-    price     numeric(10,2)
+    id                serial primary key,
+    name              varchar(255),
+    dish_type         dish_type,
+    selling_price     numeric(10,2)
 );
 
 create type ingredient_category as enum ('VEGETABLE', 'ANIMAL', 'MARINE', 'DAIRY', 'OTHER');
