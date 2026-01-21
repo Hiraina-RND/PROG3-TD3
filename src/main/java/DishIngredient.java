@@ -1,9 +1,11 @@
+import java.math.BigDecimal;
+
 public class DishIngredient {
 
     private Integer id;
     private Dish dish;
     private Ingredient ingredient;
-    private double quantityRequired;
+    private BigDecimal quantityRequired;
     private UnitType unit;
 
     public int getId() {
@@ -18,7 +20,7 @@ public class DishIngredient {
         return ingredient;
     }
 
-    public double getQuantityRequired() {
+    public BigDecimal getQuantityRequired() {
         return quantityRequired;
     }
 
@@ -38,7 +40,7 @@ public class DishIngredient {
         this.ingredient = ingredient;
     }
 
-    public void setQuantityRequired(double quantityRequired) {
+    public void setQuantityRequired(BigDecimal quantityRequired) {
         this.quantityRequired = quantityRequired;
     }
 
@@ -46,7 +48,7 @@ public class DishIngredient {
         this.unit = unit;
     }
 
-    public DishIngredient(int id, Dish dish, Ingredient ingredient, double quantityRequired, UnitType unit) {
+    public DishIngredient(int id, Dish dish, Ingredient ingredient, BigDecimal quantityRequired, UnitType unit) {
         this.id = id;
         this.dish = dish;
         this.ingredient = ingredient;

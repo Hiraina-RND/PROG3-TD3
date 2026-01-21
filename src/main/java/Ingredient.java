@@ -1,3 +1,4 @@
+import java.math.BigDecimal;
 import java.util.Objects;
 
 public class Ingredient {
@@ -5,7 +6,7 @@ public class Ingredient {
     private Integer id;
     private String name;
     private CategoryEnum category;
-    private Double price;
+    private BigDecimal price;
 
     @Override
     public boolean equals(Object o) {
@@ -41,7 +42,7 @@ public class Ingredient {
         return category;
     }
 
-    public Double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
@@ -57,11 +58,11 @@ public class Ingredient {
         this.category = category;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
-    public Ingredient(Integer id, String name, CategoryEnum category, Double price) {
+    public Ingredient(Integer id, String name, CategoryEnum category, BigDecimal price) {
         this.id = id;
         this.name = name;
         this.category = category;
