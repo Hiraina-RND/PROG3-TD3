@@ -1,3 +1,4 @@
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -8,7 +9,7 @@ public class Dish {
     private String name;
     private DishTypeEnum dishType;
     private List<DishIngredient> dishIngredients;
-    private Double price;
+    private BigDecimal price;
 
     @Override
     public boolean equals(Object o) {
@@ -61,7 +62,7 @@ public class Dish {
         return dishIngredients;
     }
 
-    public Double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
@@ -81,11 +82,11 @@ public class Dish {
         this.dishIngredients = dishIngredients;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
-    public Dish(Integer id, String name, DishTypeEnum dishType, List<DishIngredient> dishIngredients, Double price) {
+    public Dish(Integer id, String name, DishTypeEnum dishType, List<DishIngredient> dishIngredients, BigDecimal price) {
         this.id = id;
         this.name = name;
         this.dishType = dishType;
@@ -97,18 +98,24 @@ public class Dish {
 
     }
 
-    public Double getDishCost() {
-        double totalPrice = 0;
+    public BigDecimal getDishCost() {
+        BigDecimal totalPrice = BigDecimal.ZERO;
+
         for (DishIngredient dishIngredient : dishIngredients) {
-            totalPrice = totalPrice + (dishIngredient.getIngredient().getPrice() * dishIngredient.getQuantityRequired());
+            BigDecimal ingredientPrice = dishIngredient.getIngredient().getPrice();
+            BigDecimal quantity = dishIngredient.getQuantityRequired();
+
+            BigDecimal cost = ingredientPrice.multiply(quantity);
+            totalPrice = totalPrice.add(cost);
         }
+
         return totalPrice;
     }
 
-    public Double getGrossMargin() {
+    public BigDecimal getGrossMargin() {
         if (price == null) {
             throw new RuntimeException("Price is null");
         }
-        return price - getDishCost();
+        return price.subtract(getDishCost());
     }
 }
