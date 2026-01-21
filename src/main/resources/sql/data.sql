@@ -36,7 +36,7 @@ values (1, 1, 1, 0.20, 'KG'),
 
 select setval('dish_ingredient_id_seq', (SELECT COALESCE(MAX(id), 0) FROM dish_ingredient));
 
--- new data for dish_table
+-- new data for dish table
 insert into dish (id, name, dish_type, selling_price)
 values (1, 'Salade fraîche', 'STARTER', 3500.00),
        (2, 'Poulet grillé', 'MAIN', 12000.00),
