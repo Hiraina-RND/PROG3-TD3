@@ -1,4 +1,3 @@
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -9,7 +8,7 @@ public class Dish {
     private String name;
     private DishTypeEnum dishType;
     private List<DishIngredient> dishIngredients;
-    private BigDecimal price;
+    private Double price;
 
     @Override
     public boolean equals(Object o) {
@@ -62,7 +61,7 @@ public class Dish {
         return dishIngredients;
     }
 
-    public BigDecimal getPrice() {
+    public Double getPrice() {
         return price;
     }
 
@@ -82,11 +81,11 @@ public class Dish {
         this.dishIngredients = dishIngredients;
     }
 
-    public void setPrice(BigDecimal price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 
-    public Dish(Integer id, String name, DishTypeEnum dishType, List<DishIngredient> dishIngredients, BigDecimal price) {
+    public Dish(Integer id, String name, DishTypeEnum dishType, List<DishIngredient> dishIngredients, double price) {
         this.id = id;
         this.name = name;
         this.dishType = dishType;
@@ -98,24 +97,24 @@ public class Dish {
 
     }
 
-    public BigDecimal getDishCost() {
-        BigDecimal totalPrice = BigDecimal.ZERO;
+    public Double getDishCost() {
+        Double totalPrice = 0.00;
 
         for (DishIngredient dishIngredient : dishIngredients) {
-            BigDecimal ingredientPrice = dishIngredient.getIngredient().getPrice();
-            BigDecimal quantity = dishIngredient.getQuantityRequired();
+            Double ingredientPrice = dishIngredient.getIngredient().getPrice();
+            Double quantity = dishIngredient.getQuantityRequired();
 
-            BigDecimal cost = ingredientPrice.multiply(quantity);
-            totalPrice = totalPrice.add(cost);
+            Double cost = ingredientPrice * quantity;
+            totalPrice = totalPrice + cost;
         }
 
         return totalPrice;
     }
 
-    public BigDecimal getGrossMargin() {
+    public Double getGrossMargin() {
         if (price == null) {
             throw new RuntimeException("Price is null");
         }
-        return price.subtract(getDishCost());
+        return price - this.getDishCost();
     }
 }

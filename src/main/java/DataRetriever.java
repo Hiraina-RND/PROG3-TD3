@@ -24,7 +24,7 @@ public class DataRetriever {
                 dish.setName(resultSet.getString("dish_name"));
                 dish.setDishType(DishTypeEnum.valueOf(resultSet.getString("dish_type")));
                 dish.setPrice(resultSet.getObject("dish_selling_price") == null
-                        ? null : resultSet.getBigDecimal("dish_selling_price"));
+                        ? null : resultSet.getDouble("dish_selling_price"));
                 dish.setDishIngredients(findDishIngredientsByDishId(id, dish));
                 return dish;
             }
@@ -57,7 +57,7 @@ public class DataRetriever {
                             resultSet.getInt("id"),
                             resultSet.getString("name"),
                             CategoryEnum.valueOf(resultSet.getString("category")),
-                            resultSet.getBigDecimal("price")
+                            resultSet.getDouble("price")
                     );
                 }
             }
@@ -89,7 +89,7 @@ public class DataRetriever {
                             resultSet.getInt("id"),
                             dish,
                             findIngredientById(resultSet.getInt("id_ingredient")),
-                            resultSet.getBigDecimal("quantity_required"),
+                            resultSet.getDouble("quantity_required"),
                             UnitType.valueOf(resultSet.getString("unit"))
                     ));
                 }
@@ -152,7 +152,7 @@ public class DataRetriever {
         try (PreparedStatement ps = connection.prepareStatement(upsertDishByIdSql)) {
             ps.setInt(1, dishToSave.getId());
             if (dishToSave.getPrice() != null) {
-                ps.setBigDecimal(2, dishToSave.getPrice());
+                ps.setDouble(2, dishToSave.getPrice());
             } else {
                 ps.setNull(2, Types.DOUBLE);
             }
@@ -180,7 +180,7 @@ public class DataRetriever {
         try (PreparedStatement ps = connection.prepareStatement(upsertDishByIdSql)) {
             ps.setString(1, dishToSave.getName());
             if (dishToSave.getPrice() != null) {
-                ps.setBigDecimal(2, dishToSave.getPrice());
+                ps.setDouble(2, dishToSave.getPrice());
             } else {
                 ps.setNull(2, Types.DOUBLE);
             }
@@ -229,7 +229,7 @@ public class DataRetriever {
 
                   preparedStatement.setInt(2, dishId);
                   preparedStatement.setInt(3, dishIngredient.getIngredient().getId());
-                  preparedStatement.setBigDecimal(4, dishIngredient.getQuantityRequired());
+                  preparedStatement.setDouble(4, dishIngredient.getQuantityRequired());
                   preparedStatement.setString(5, dishIngredient.getUnit().name());
 
                   preparedStatement.executeUpdate();
@@ -240,15 +240,15 @@ public class DataRetriever {
 
     void saveIngredient(Connection conn, Ingredient ingredient) throws SQLException {
         if (ingredient.getId() != null) {
-            upsertIngredientById(conn, ingredient);
+            upsetIngredientById(conn, ingredient);
             updateSequenceNextValue( conn,"ingredient", "id", getSerialSequenceName( conn,"ingredient", "id"));
         } else {
             updateSequenceNextValue( conn,"ingredient", "id", getSerialSequenceName( conn,"ingredient", "id"));
-            upsertIngredientByName(conn, ingredient);
+            upsetIngredientByName(conn, ingredient);
         }
     }
 
-    private void upsertIngredientById(Connection conn, Ingredient ingredient) {
+    private void upsetIngredientById(Connection conn, Ingredient ingredient) {
         String sql = """
         INSERT INTO ingredient (id, name, price, category)
         VALUES (?, ?, ?, ?::ingredient_category)
@@ -262,7 +262,7 @@ public class DataRetriever {
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, ingredient.getId());
             ps.setString(2, ingredient.getName());
-            ps.setBigDecimal(3, ingredient.getPrice());
+            ps.setDouble(3, ingredient.getPrice());
             ps.setString(4, ingredient.getCategory().name());
 
             try (ResultSet rs = ps.executeQuery()) {
@@ -275,7 +275,7 @@ public class DataRetriever {
         }
     }
 
-    private void upsertIngredientByName(Connection conn, Ingredient ingredient) {
+    private void upsetIngredientByName(Connection conn, Ingredient ingredient) {
         String sql = """
         INSERT INTO ingredient (name, price, category)
         VALUES (?, ?, ?::ingredient_category)
@@ -288,7 +288,7 @@ public class DataRetriever {
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, ingredient.getName());
-            ps.setBigDecimal(2, ingredient.getPrice());
+            ps.setDouble(2, ingredient.getPrice());
             ps.setString(3, ingredient.getCategory().name());
 
             try (ResultSet resultSet = ps.executeQuery()){

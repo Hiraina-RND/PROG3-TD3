@@ -5,7 +5,7 @@ public class DishIngredient {
     private Integer id;
     private Dish dish;
     private Ingredient ingredient;
-    private BigDecimal quantityRequired;
+    private Double quantityRequired;
     private UnitType unit;
 
     public Integer getId() {
@@ -20,7 +20,7 @@ public class DishIngredient {
         return ingredient;
     }
 
-    public BigDecimal getQuantityRequired() {
+    public Double getQuantityRequired() {
         return quantityRequired;
     }
 
@@ -40,7 +40,7 @@ public class DishIngredient {
         this.ingredient = ingredient;
     }
 
-    public void setQuantityRequired(BigDecimal quantityRequired) {
+    public void setQuantityRequired(Double quantityRequired) {
         this.quantityRequired = quantityRequired;
     }
 
@@ -48,7 +48,7 @@ public class DishIngredient {
         this.unit = unit;
     }
 
-    public DishIngredient(Integer id, Dish dish, Ingredient ingredient, BigDecimal quantityRequired, UnitType unit) {
+    public DishIngredient(Integer id, Dish dish, Ingredient ingredient, Double quantityRequired, UnitType unit) {
         this.id = id;
         this.dish = dish;
         this.ingredient = ingredient;
