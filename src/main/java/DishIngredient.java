@@ -8,7 +8,7 @@ public class DishIngredient {
     private BigDecimal quantityRequired;
     private UnitType unit;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -48,7 +48,7 @@ public class DishIngredient {
         this.unit = unit;
     }
 
-    public DishIngredient(int id, Dish dish, Ingredient ingredient, BigDecimal quantityRequired, UnitType unit) {
+    public DishIngredient(Integer id, Dish dish, Ingredient ingredient, BigDecimal quantityRequired, UnitType unit) {
         this.id = id;
         this.dish = dish;
         this.ingredient = ingredient;
