@@ -18,11 +18,11 @@ SELECT setval('ingredient_id_seq', (SELECT COALESCE(MAX(id), 0) FROM ingredient)
 
 
 update dish
-set price = 2000.0
+set selling_price = 2000.0
 where id = 1;
 
 update dish
-set price = 6000.0
+set selling_price = 6000.0
 where id = 2;
 
 
