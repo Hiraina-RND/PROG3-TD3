@@ -30,3 +30,15 @@ create table dish_ingredient
     unit                unit_type,
     constraint unique_dish_ingredient unique (id_dish, id_ingredient)
 );
+
+create type movement_type as enum ('IN', 'OUT');
+
+create table stock_movement
+(
+   id               serial primary key,
+   id_ingredient    int references ingredient(id),
+   quantity         numeric(6,3),
+   type             movement_type,
+   unit             unit_type,
+   creation_date    timeStamp
+);
