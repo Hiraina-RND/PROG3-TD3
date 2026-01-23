@@ -1,4 +1,5 @@
-import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.List;
 import java.util.Objects;
 
 public class Ingredient {
@@ -7,6 +8,7 @@ public class Ingredient {
     private String name;
     private CategoryEnum category;
     private Double price;
+    private List<StockMovement> stockMovementList;
 
     @Override
     public boolean equals(Object o) {
@@ -48,6 +50,10 @@ public class Ingredient {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public StockValue getStockValueAt(Instant instant) {
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     public void setName(String name) {
