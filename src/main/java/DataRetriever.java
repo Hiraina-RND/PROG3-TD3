@@ -34,6 +34,42 @@ public class DataRetriever {
         }
     }
 
+    List<Dish> findDishsByIngredientName(String ingredientName) {
+        DBConnection dbConnection = new DBConnection();
+
+        String sql = """
+                SELECT d.*
+                FROM dish d
+                JOIN dish_ingredient di ON d.id = di.id_dish
+                JOIN ingredient i ON di.id_ingredient = i.id
+                WHERE i.name ILIKE ?;
+                """;
+        List<Dish> findedDishs = new ArrayList<>();
+
+        try(
+                Connection connection = dbConnection.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        ) {
+            preparedStatement.setString(1, "%" + ingredientName + "%");
+            try (ResultSet resultSet = preparedStatement.executeQuery()){
+                while (resultSet.next()){
+                    int dishId = resultSet.getInt("id");
+                    Dish dish = new Dish(
+                            dishId,
+                            resultSet.getString("name"),
+                            DishTypeEnum.valueOf(resultSet.getString("dish_type")),
+                            findDishIngredientsByDishId(dishId, findDishById(dishId)),
+                            resultSet.getDouble("selling_price")
+                    );
+                    findedDishs.add(dish);
+                }
+            }
+        } catch (SQLException e){
+            throw new RuntimeException("Error executing query", e);
+        }
+        return findedDishs;
+    }
+
     Ingredient findIngredientById(int id_ingredient){
         DBConnection dbConnection = new DBConnection();
 
