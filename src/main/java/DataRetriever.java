@@ -1,4 +1,3 @@
-import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -108,6 +107,38 @@ public class DataRetriever {
             findedIngredients.add(dishIngredient.getIngredient());
         }
         return findedIngredients;
+    }
+
+    List<Ingredient> findIngredients(int page, int size) {
+        DBConnection dbConnection = new DBConnection();
+
+        String sql = """
+                SELECT i.id, i.name, i.price, i.category
+                FROM ingredient i
+                LIMIT ? OFFSET ?""";
+        List<Ingredient> findedIngredientsList = new ArrayList<>();
+
+        try(
+                Connection connection = dbConnection.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)
+        ) {
+            preparedStatement.setInt(1, size);
+            preparedStatement.setInt(2, (page - 1) * size);
+
+            try(ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()){
+                    findedIngredientsList.add(new Ingredient(
+                            resultSet.getInt("id"),
+                            resultSet.getString("name"),
+                            CategoryEnum.valueOf(resultSet.getString("category")),
+                            resultSet.getDouble("price")
+                    ));
+                }
+            }
+        } catch (SQLException e){
+            throw new RuntimeException("Error executing query", e);
+        }
+        return findedIngredientsList;
     }
 
     Dish saveDish(Dish toSave) {
