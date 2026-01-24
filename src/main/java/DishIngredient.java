@@ -1,5 +1,3 @@
-import java.math.BigDecimal;
-
 public class DishIngredient {
 
     private Integer id;
@@ -7,6 +5,17 @@ public class DishIngredient {
     private Ingredient ingredient;
     private Double quantityRequired;
     private UnitType unit;
+
+    @Override
+    public String toString() {
+        return "DishIngredient{" +
+                "id=" + id +
+                ", dish=" + dish.getName() +
+                ", ingredient=" + ingredient.getName() +
+                ", quantityRequired=" + quantityRequired +
+                ", unit=" + unit +
+                '}';
+    }
 
     public Integer getId() {
         return id;
