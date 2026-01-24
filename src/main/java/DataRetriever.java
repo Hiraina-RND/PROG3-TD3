@@ -70,7 +70,7 @@ public class DataRetriever {
         return findedDishs;
     }
 
-    Ingredient findIngredientById(int id_ingredient){
+    private Ingredient findIngredientById(int id_ingredient){
         DBConnection dbConnection = new DBConnection();
 
         String SQL = """
@@ -102,7 +102,7 @@ public class DataRetriever {
         }
     }
 
-    List<DishIngredient> findDishIngredientsByDishId(int id_dish, Dish dish) {
+    private List<DishIngredient> findDishIngredientsByDishId(int id_dish, Dish dish) {
         DBConnection dbConnection = new DBConnection();
 
         List<DishIngredient> findedDishIngredients = new ArrayList<>();
@@ -234,7 +234,7 @@ public class DataRetriever {
         }
     }
 
-    Integer upSetDishByName(Connection connection, Dish dishToSave) {
+    private Integer upSetDishByName(Connection connection, Dish dishToSave) {
         String upsertDishByIdSql = """
                     INSERT INTO dish (name, selling_price, dish_type)
                     VALUES (?, ?, ?::dish_type)
@@ -276,7 +276,7 @@ public class DataRetriever {
         }
     }
 
-    void saveDishIngredient(Connection connection, Integer dishId, DishIngredient dishIngredient) {
+    private void saveDishIngredient(Connection connection, Integer dishId, DishIngredient dishIngredient) {
         String sqlToSaveIngredient = """
                 INSERT INTO dish_ingredient (id, id_dish, id_ingredient, quantity_required, unit)
                 VALUES (?, ?, ?, ?, ?::unit_type)
@@ -305,7 +305,7 @@ public class DataRetriever {
         }
     }
 
-    void saveIngredient(Connection conn, Ingredient ingredient) throws SQLException {
+    private void saveIngredient(Connection conn, Ingredient ingredient) throws SQLException {
         if (ingredient.getId() != null) {
             upsetIngredientById(conn, ingredient);
             updateSequenceNextValue( conn,"ingredient", "id", getSerialSequenceName( conn,"ingredient", "id"));
