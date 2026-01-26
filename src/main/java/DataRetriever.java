@@ -441,4 +441,60 @@ public class DataRetriever {
         }
         return savedIngredients;
     }
+
+    List<Ingredient> findIngredientsByCriteria(
+            String ingredientName, CategoryEnum category, String dishName, int page, int size
+    ) {
+        DBConnection dbConnection = new DBConnection();
+        String sql = """
+                SELECT i.id, i.name, i.price, i.category
+                FROM ingredient i
+                JOIN dish_ingredient di ON i.id = di.id_ingredient
+                JOIN dish d ON di.id_dish = d.id
+                WHERE 1=1
+                """;
+        List<Ingredient> findedIngredients = new ArrayList<>();
+
+        try (Connection connection = dbConnection.getConnection()){
+            if (ingredientName != null) {
+                sql += " AND i.name ILIKE ?";
+            }
+            if (category != null) {
+                sql += " AND i.category = ?::ingredient_category";
+            }
+            if (dishName != null) {
+                sql += " AND d.name ILIKE ?";
+            }
+            sql += " LIMIT ? OFFSET ?";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+                int paramIndex = 1;
+                if (ingredientName != null && !ingredientName.isEmpty()) {
+                    preparedStatement.setString(paramIndex++, "%" + ingredientName + "%");
+                }
+                if (category != null) {
+                    preparedStatement.setString(paramIndex++, category.name());
+                }
+                if (dishName != null && !dishName.isEmpty()) {
+                    preparedStatement.setString(paramIndex++, "%" + dishName + "%");
+                }
+                preparedStatement.setInt(paramIndex++, size);
+                preparedStatement.setInt(paramIndex++, (page - 1) * size);
+
+                try (ResultSet resultSet = preparedStatement.executeQuery()){
+                    while (resultSet.next()){
+                        findedIngredients.add(new Ingredient(
+                                resultSet.getInt("id"),
+                                resultSet.getString("name"),
+                                CategoryEnum.valueOf(resultSet.getString("category")),
+                                resultSet.getDouble("price")
+                        ));
+                    }
+                }
+            }
+        } catch (SQLException e){
+            throw new RuntimeException("Error executing query", e);
+        }
+        return findedIngredients;
+    }
 }
