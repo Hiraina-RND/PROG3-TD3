@@ -92,7 +92,8 @@ public class DataRetriever {
                             resultSet.getInt("id"),
                             resultSet.getString("name"),
                             CategoryEnum.valueOf(resultSet.getString("category")),
-                            resultSet.getDouble("price")
+                            resultSet.getDouble("price"),
+                            findStockMovementsByIdIngredient(resultSet.getInt("id"))
                     );
                 }
             }
@@ -167,7 +168,8 @@ public class DataRetriever {
                             resultSet.getInt("id"),
                             resultSet.getString("name"),
                             CategoryEnum.valueOf(resultSet.getString("category")),
-                            resultSet.getDouble("price")
+                            resultSet.getDouble("price"),
+                            findStockMovementsByIdIngredient(resultSet.getInt("id"))
                     ));
                 }
             }
@@ -175,6 +177,40 @@ public class DataRetriever {
             throw new RuntimeException("Error executing query", e);
         }
         return findedIngredientsList;
+    }
+
+    private List<StockMovement> findStockMovementsByIdIngredient(Integer idIngredient){
+        DBConnection dbConnection = new DBConnection();
+        String sql = """
+                SELECT sm.id, sm.quantity, sm.type, sm.unit, sm.creation_date
+                FROM stock_movement sm
+                WHERE sm.id_ingredient = ?
+                """;
+        List<StockMovement> findedStockMovements = new ArrayList<>();
+
+        try (
+                Connection connection = dbConnection.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)
+        ){
+            preparedStatement.setInt(1, idIngredient);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()){
+                while (resultSet.next()){
+                    findedStockMovements.add(new StockMovement(
+                            resultSet.getInt("id"),
+                            new StockValue(
+                                    resultSet.getDouble("quantity"),
+                                    UnitType.valueOf(resultSet.getString("unit"))
+                            ),
+                            MovementTypeEnum.valueOf(resultSet.getString("type")),
+                            resultSet.getTimestamp("creation_date").toInstant()
+                    ));
+                }
+            }
+        } catch (SQLException e){
+            throw new RuntimeException("Error executing query", e);
+        }
+        return findedStockMovements;
     }
 
     Dish saveDish(Dish toSave) {
@@ -487,7 +523,8 @@ public class DataRetriever {
                                 resultSet.getInt("id"),
                                 resultSet.getString("name"),
                                 CategoryEnum.valueOf(resultSet.getString("category")),
-                                resultSet.getDouble("price")
+                                resultSet.getDouble("price"),
+                                findStockMovementsByIdIngredient(resultSet.getInt("id"))
                         ));
                     }
                 }
