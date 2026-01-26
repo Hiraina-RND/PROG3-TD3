@@ -229,7 +229,7 @@ public class DataRetriever {
                 deleteDishIngredientByIdDish(conn, dishId);
             } else {
                 for (DishIngredient dishIngredient : toSave.getDishIngredients()){
-                    saveIngredient(conn, dishIngredient.getIngredient());
+                    saveIngredient(dishIngredient.getIngredient());
                     saveDishIngredient(conn, dishId, dishIngredient);
                 }
             }
@@ -341,17 +341,25 @@ public class DataRetriever {
         }
     }
 
-    private void saveIngredient(Connection conn, Ingredient ingredient) throws SQLException {
-        if (ingredient.getId() != null) {
-            upsetIngredientById(conn, ingredient);
-            updateSequenceNextValue( conn,"ingredient", "id", getSerialSequenceName( conn,"ingredient", "id"));
-        } else {
-            updateSequenceNextValue( conn,"ingredient", "id", getSerialSequenceName( conn,"ingredient", "id"));
-            upsetIngredientByName(conn, ingredient);
+    Ingredient saveIngredient(Ingredient ingredient) throws SQLException {
+        DBConnection dbConnection = new DBConnection();
+        int ingredientId;
+
+        try (Connection connection = dbConnection.getConnection()){
+            if (ingredient.getId() != null) {
+                ingredientId = upsetIngredientById(connection, ingredient);
+                updateSequenceNextValue( connection,"ingredient", "id", getSerialSequenceName( connection,"ingredient", "id"));
+            } else {
+                updateSequenceNextValue( connection,"ingredient", "id", getSerialSequenceName( connection,"ingredient", "id"));
+                ingredientId = upsetIngredientByName(connection, ingredient);
+            }
+        } catch (SQLException e){
+            throw new RuntimeException("Error executing query", e);
         }
+        return findIngredientById(ingredientId);
     }
 
-    private void upsetIngredientById(Connection conn, Ingredient ingredient) {
+    private int upsetIngredientById(Connection conn, Ingredient ingredient) {
         String sql = """
         INSERT INTO ingredient (id, name, price, category)
         VALUES (?, ?, ?, ?::ingredient_category)
@@ -376,9 +384,10 @@ public class DataRetriever {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        return ingredient.getId();
     }
 
-    private void upsetIngredientByName(Connection conn, Ingredient ingredient) {
+    private int upsetIngredientByName(Connection conn, Ingredient ingredient) {
         String sql = """
         INSERT INTO ingredient (name, price, category)
         VALUES (?, ?, ?::ingredient_category)
@@ -402,6 +411,7 @@ public class DataRetriever {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        return ingredient.getId();
     }
 
     private String getSerialSequenceName(Connection conn, String tableName, String columnName)
@@ -464,7 +474,7 @@ public class DataRetriever {
 
             try {
                 for (Ingredient ingredient : newIngredients){
-                    saveIngredient(connection, ingredient);
+                    saveIngredient(ingredient);
                     savedIngredients.add(ingredient);
                 }
             } catch (SQLException e){
