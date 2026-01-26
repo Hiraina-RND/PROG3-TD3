@@ -10,16 +10,17 @@ public class Ingredient {
     private Double price;
     private List<StockMovement> stockMovementList;
 
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Ingredient that = (Ingredient) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && category == that.category && Objects.equals(price, that.price);
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && category == that.category && Objects.equals(price, that.price) && Objects.equals(stockMovementList, that.stockMovementList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, category, price);
+        return Objects.hash(id, name, category, price, stockMovementList);
     }
 
     @Override
@@ -29,6 +30,7 @@ public class Ingredient {
                 ", name='" + name + '\'' +
                 ", category=" + category +
                 ", price=" + price +
+                ", stockMovementList=" + stockMovementList +
                 '}';
     }
 
@@ -48,12 +50,12 @@ public class Ingredient {
         return price;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public List<StockMovement> getStockMovementList() {
+        return stockMovementList;
     }
 
-    public StockValue getStockValueAt(Instant instant) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public void setName(String name) {
@@ -68,14 +70,24 @@ public class Ingredient {
         this.price = price;
     }
 
-    public Ingredient(Integer id, String name, CategoryEnum category, Double price) {
+    public void setStockMovementList(List<StockMovement> stockMovementList) {
+        this.stockMovementList = stockMovementList;
+    }
+
+    public Ingredient(Integer id, String name, CategoryEnum category, Double price, List<StockMovement> stockMovementList) {
         this.id = id;
         this.name = name;
         this.category = category;
         this.price = price;
+        this.stockMovementList = stockMovementList;
     }
 
+
     public Ingredient() {
+    }
+
+    public StockValue getStockValueAt(Instant instant) {
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
 }
