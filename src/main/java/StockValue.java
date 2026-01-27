@@ -6,6 +6,15 @@ public class StockValue {
     private UnitType unit;
 
     @Override
+    public String toString() {
+        return "StockValue{" +
+                "quantity=" + quantity +
+                ", unit=" + unit +
+                '}';
+    }
+
+
+    @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         StockValue that = (StockValue) o;
