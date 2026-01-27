@@ -87,7 +87,15 @@ public class Ingredient {
     }
 
     public StockValue getStockValueAt(Instant instant) {
-        throw new UnsupportedOperationException("Not implemented yet");
-    }
+        if (instant == null || stockMovementList == null || stockMovementList.isEmpty()) {
+            return null;
+        }
 
+        for (StockMovement stockMovement : stockMovementList) {
+            if (instant.equals(stockMovement.getCreationDateTime())) {
+                return stockMovement.getValue();
+            }
+        }
+        return null;
+    }
 }
