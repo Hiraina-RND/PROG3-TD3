@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -346,15 +347,27 @@ public class DataRetriever {
         int ingredientId;
 
         try (Connection connection = dbConnection.getConnection()){
-            if (ingredient.getId() != null) {
-                ingredientId = upsetIngredientById(connection, ingredient);
-                updateSequenceNextValue( connection,"ingredient", "id", getSerialSequenceName( connection,"ingredient", "id"));
-            } else {
-                updateSequenceNextValue( connection,"ingredient", "id", getSerialSequenceName( connection,"ingredient", "id"));
-                ingredientId = upsetIngredientByName(connection, ingredient);
+            connection.setAutoCommit(false);
+
+            try {
+                if (ingredient.getId() != null) {
+                    ingredientId = upsetIngredientById(connection, ingredient);
+                    updateSequenceNextValue( connection,"ingredient", "id", getSerialSequenceName( connection,"ingredient", "id"));
+                } else {
+                    updateSequenceNextValue( connection,"ingredient", "id", getSerialSequenceName( connection,"ingredient", "id"));
+                    ingredientId = upsetIngredientByName(connection, ingredient);
+                }
+
+                if (ingredient.getStockMovementList() != null || !ingredient.getStockMovementList().isEmpty()){
+                    for (StockMovement stockMovement : ingredient.getStockMovementList()){
+                        saveStockMovement(connection, stockMovement, ingredientId);
+                    }
+                }
+            } catch (SQLException e){
+                connection.rollback();
+                throw new RuntimeException("Error executing query", e);
             }
-        } catch (SQLException e){
-            throw new RuntimeException("Error executing query", e);
+            connection.commit();
         }
         return findIngredientById(ingredientId);
     }
@@ -396,7 +409,6 @@ public class DataRetriever {
             category = EXCLUDED.category
         RETURNING id
         """;
-        int id;
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, ingredient.getName());
@@ -412,6 +424,39 @@ public class DataRetriever {
             throw new RuntimeException(e);
         }
         return ingredient.getId();
+    }
+
+    private void saveStockMovement(Connection connection, StockMovement toSave, int idIngredient){
+        String sql = """
+                INSERT INTO stock_movement (id, id_ingredient, quantity, type, unit, creation_date)
+                VALUES (?, ?, ?, ?::movement_type, ?::unit_type, ?)
+                ON CONFLICT (id) DO NOTHING
+                """;
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+            preparedStatement.setInt(1, toSave.getId());
+            preparedStatement.setInt(2, idIngredient);
+            preparedStatement.setDouble(3, toSave.getValue().getQuantity());
+            if (toSave.getType() == null) {
+                preparedStatement.setNull(4, Types.OTHER);
+            } else {
+                preparedStatement.setString(4, toSave.getType().name());
+            }
+            if (toSave.getValue().getUnit() == null) {
+                preparedStatement.setNull(5, Types.OTHER);
+            } else {
+                preparedStatement.setString(5, toSave.getValue().getUnit().name());
+            }
+            if (toSave.getCreationDateTime() == null) {
+                preparedStatement.setNull(6, Types.TIMESTAMP);
+            } else {
+                preparedStatement.setTimestamp(6, Timestamp.from(toSave.getCreationDateTime()));
+            }
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e){
+            throw new RuntimeException("Error executing query", e);
+        }
     }
 
     private String getSerialSequenceName(Connection conn, String tableName, String columnName)
