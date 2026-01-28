@@ -98,4 +98,18 @@ public class Ingredient {
         }
         return null;
     }
+
+    public double getQuantity(){
+        double inNumber = 0;
+        double outNumber = 0;
+
+        for (StockMovement stockMovement : stockMovementList){
+            if (stockMovement.getType().toString().equals("IN")){
+                inNumber = inNumber + stockMovement.getValue().getQuantity();
+            } else {
+                outNumber = outNumber + stockMovement.getValue().getQuantity();
+            }
+        }
+        return inNumber - outNumber;
+    }
 }
