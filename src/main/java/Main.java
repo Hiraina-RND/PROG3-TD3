@@ -1,19 +1,21 @@
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.List;
+
 public class Main {
     public static void main(String[] args) {
-        // Log before changes
         DataRetriever dataRetriever = new DataRetriever();
-        Dish dish = dataRetriever.findDishById(4
+        List<Ingredient> allIngredients = dataRetriever.findIngredients(1, 20);
+        for (Ingredient ingredient : allIngredients){
+            System.out.println(ingredient.getName() + " : " + ingredient.getStockValueAt(LocalDateTime
+                    .of(2024, 1, 6, 12, 0)
+                    .atZone(ZoneId.systemDefault()).toInstant()));
+        }
+        System.out.println("=========");
 
-        );
-        System.out.println(dish);
+        for (Ingredient ingredient : allIngredients) {
+            System.out.println(ingredient.getName() + " : " + ingredient.getQuantity());
+        }
 
-        // Log after changes
-//        dish.setIngredients(List.of(new Ingredient(1), new Ingredient(2)));
-//        Dish newDish = dataRetriever.saveDish(dish);
-//        System.out.println(newDish);
-
-        // Ingredient creations
-        //List<Ingredient> createdIngredients = dataRetriever.createIngredients(List.of(new Ingredient(null, "Fromage", CategoryEnum.DAIRY, 1200.0)));
-        //System.out.println(createdIngredients);
     }
 }
